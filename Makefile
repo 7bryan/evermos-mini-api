@@ -1,4 +1,4 @@
-.PHONY: run build tidy fmt vet test test-integration
+.PHONY: run build tidy fmt vet test test-integration test-external
 
 run:
 	go run ./cmd/api
@@ -20,3 +20,6 @@ test:
 
 test-integration:
 	go test -tags integration -count=1 ./internal/infrastructure/database/...
+
+test-external:
+	go test -tags external -count=1 -v ./internal/infrastructure/emsifa/...

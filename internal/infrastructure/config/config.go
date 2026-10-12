@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -14,9 +15,10 @@ import (
 const minJWTSecretLength = 32
 
 type Config struct {
-	App AppConfig
-	DB  DatabaseConfig
-	JWT JWTConfig
+	App    AppConfig
+	DB     DatabaseConfig
+	JWT    JWTConfig
+	Region RegionConfig
 }
 
 type AppConfig struct {
@@ -34,6 +36,10 @@ type DatabaseConfig struct {
 type JWTConfig struct {
 	Secret string
 	Expiry time.Duration
+}
+
+type RegionConfig struct {
+	BaseURL string
 }
 
 func Load() (*Config, error) {
@@ -73,6 +79,13 @@ func Load() (*Config, error) {
 		hours = 24
 	}
 	cfg.JWT = JWTConfig{Secret: secret, Expiry: time.Duration(hours) * time.Hour}
+
+	cfg.Region = RegionConfig{
+		BaseURL: strings.TrimRight(getEnv("REGION_API_BASE_URL", "https://emsifa.github.io/api-wilayah-indonesia/api"), "/"),
+	}
+	if u, urlErr := url.Parse(cfg.Region.BaseURL); urlErr != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		problems = append(problems, "REGION_API_BASE_URL must be a valid http(s) URL")
+	}
 
 	if len(problems) > 0 {
 		return nil, errors.New("invalid configuration: " + strings.Join(problems, "; "))
