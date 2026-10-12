@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+bin/
+*.exe
+*.test
+coverage.out
+uploads/*
+!uploads/.gitkeep
+.idea/
+.vscode/
