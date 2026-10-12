@@ -37,6 +37,9 @@ func run() error {
 		return err
 	}
 	defer func() { _ = sqlDB.Close() }()
+	if err := database.Migrate(db); err != nil {
+		return err
+	}
 
 	app := fiber.New(fiber.Config{
 		AppName:      "evermos-mini-api",

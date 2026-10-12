@@ -1,4 +1,4 @@
-.PHONY: run build tidy fmt vet test
+.PHONY: run build tidy fmt vet test test-integration
 
 run:
 	go run ./cmd/api
@@ -17,3 +17,6 @@ vet:
 
 test:
 	go test ./...
+
+test-integration:
+	go test -tags integration -count=1 ./internal/infrastructure/database/...
