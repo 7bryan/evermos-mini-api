@@ -10,8 +10,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/7bryan/evermos-mini-api/internal/delivery/http/response"
 	"github.com/7bryan/evermos-mini-api/internal/infrastructure/config"
 	"github.com/7bryan/evermos-mini-api/internal/infrastructure/database"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 func main() {
@@ -36,7 +38,11 @@ func run() error {
 	}
 	defer func() { _ = sqlDB.Close() }()
 
-	app := fiber.New(fiber.Config{AppName: "evermos-mini-api"})
+	app := fiber.New(fiber.Config{
+		AppName:      "evermos-mini-api",
+		ErrorHandler: response.ErrorHandler,
+	})
+	app.Use(recover.New())
 
 	app.Get("/health", func(c *fiber.Ctx) error {
 		ctx, cancel := context.WithTimeout(c.UserContext(), 2*time.Second)
